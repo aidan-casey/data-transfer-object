@@ -6,18 +6,24 @@ use ReflectionClass;
 use ReflectionProperty;
 use Spatie\DataTransferObject\Attributes\CastWith;
 use Spatie\DataTransferObject\Casters\DataTransferObjectCaster;
+use Spatie\DataTransferObject\Errors\Manager;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Spatie\DataTransferObject\Reflection\DataTransferObjectClass;
 
 #[CastWith(DataTransferObjectCaster::class)]
 abstract class DataTransferObject
 {
+    protected Manager $errorManager;
+
     protected array $exceptKeys = [];
 
     protected array $onlyKeys = [];
 
     public function __construct(...$args)
     {
+        $errorManager = $this->getErrorManager();
+        $errorManager->scopeOrAcquiesceTo(spl_object_hash($this));
+
         if (is_array($args[0] ?? null)) {
             $args = $args[0];
         }
@@ -35,6 +41,11 @@ abstract class DataTransferObject
         }
 
         $class->validate();
+
+        if ($errorManager->isScopedTo(spl_object_hash($this))) {
+            $errorManager->handle();
+            $errorManager->flush();
+        }
     }
 
     public static function arrayOf(array $arrayOfParameters): array
@@ -100,6 +111,15 @@ abstract class DataTransferObject
         return $array;
     }
 
+    public function getErrorManager(): Manager
+    {
+        if (!isset($this->errorManager)) {
+            $this->errorManager = new Manager;
+        }
+
+        return $this->errorManager;
+    }
+
     protected function parseArray(array $array): array
     {
         foreach ($array as $key => $value) {
@@ -109,7 +129,7 @@ abstract class DataTransferObject
                 continue;
             }
 
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 continue;
             }
 

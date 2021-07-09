@@ -6,7 +6,6 @@ use ReflectionClass;
 use ReflectionProperty;
 use Spatie\DataTransferObject\Attributes\Strict;
 use Spatie\DataTransferObject\DataTransferObject;
-use Spatie\DataTransferObject\Exceptions\ValidationException;
 
 class DataTransferObjectClass
 {
@@ -29,7 +28,7 @@ class DataTransferObjectClass
     {
         $publicProperties = array_filter(
             $this->reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC),
-            fn (ReflectionProperty $property) => ! $property->isStatic()
+            fn (ReflectionProperty $property) => !$property->isStatic()
         );
 
         return array_map(
@@ -43,7 +42,7 @@ class DataTransferObjectClass
 
     public function validate(): void
     {
-        $validationErrors = [];
+        $errorManager = $this->dataTransferObject->getErrorManager();
 
         foreach ($this->getProperties() as $property) {
             $validators = $property->getValidators();
@@ -55,17 +54,13 @@ class DataTransferObjectClass
                     continue;
                 }
 
-                $validationErrors[$property->name][] = $result;
+                $errorManager->report($this->dataTransferObject, $property->name, $result);
             }
-        }
-
-        if (count($validationErrors)) {
-            throw new ValidationException($this->dataTransferObject, $validationErrors);
         }
     }
 
     public function isStrict(): bool
     {
-        return $this->isStrict ??= ! empty($this->reflectionClass->getAttributes(Strict::class));
+        return $this->isStrict ??= !empty($this->reflectionClass->getAttributes(Strict::class));
     }
 }
