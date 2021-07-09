@@ -113,7 +113,7 @@ abstract class DataTransferObject
 
     public function getErrorManager(): Manager
     {
-        if (!isset($this->errorManager)) {
+        if (! isset($this->errorManager)) {
             $this->errorManager = new Manager;
         }
 
@@ -129,7 +129,7 @@ abstract class DataTransferObject
                 continue;
             }
 
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 continue;
             }
 

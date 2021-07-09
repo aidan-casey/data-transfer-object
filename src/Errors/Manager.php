@@ -28,7 +28,8 @@ class Manager implements Handler
         static::handler()->flush();
     }
 
-    public function report(DataTransferObject $dtoContext, string $propertyName, ValidationResult $result): void {
+    public function report(DataTransferObject $dtoContext, string $propertyName, ValidationResult $result): void
+    {
         static::handler()->report($dtoContext, $propertyName, $result);
     }
 

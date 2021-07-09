@@ -15,7 +15,7 @@ class ArrayCaster implements Caster
     ) {
     }
 
-    public function cast(mixed $value): array|ArrayAccess
+    public function cast(mixed $value): array | ArrayAccess
     {
         if ($this->type == 'array') {
             return $this->castArray($value);

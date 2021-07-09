@@ -28,7 +28,7 @@ class DataTransferObjectClass
     {
         $publicProperties = array_filter(
             $this->reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC),
-            fn (ReflectionProperty $property) => !$property->isStatic()
+            fn (ReflectionProperty $property) => ! $property->isStatic()
         );
 
         return array_map(
@@ -61,6 +61,6 @@ class DataTransferObjectClass
 
     public function isStrict(): bool
     {
-        return $this->isStrict ??= !empty($this->reflectionClass->getAttributes(Strict::class));
+        return $this->isStrict ??= ! empty($this->reflectionClass->getAttributes(Strict::class));
     }
 }

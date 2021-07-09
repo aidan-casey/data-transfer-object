@@ -229,7 +229,8 @@ class Baz extends DataTransferObject
 class ArrayAccessImplementation implements ArrayAccess
 {
     public function __construct(protected array $state = [])
-    {}
+    {
+    }
 
     public function offsetExists($offset)
     {
@@ -335,5 +336,3 @@ class DTOWithArrayObject extends DataTransferObject
     #[CastWith(ArrayCaster::class, itemType: Baz::class)]
     public ArrayObject $collectionOfBaz;
 }
-
-
